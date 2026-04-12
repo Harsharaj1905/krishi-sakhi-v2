@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Polygon, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import axios from 'axios';
 import LandingPage from './components/LandingPage';
 import { authAPI, cropAPI, diseaseAPI, assistantAPI } from './services/api';
 
@@ -624,11 +623,10 @@ function Dashboard({ username, onLogout }) {
     }
     setMarker(latlng); setMapLoading(true); setMapResult(null);
     try {
-      const res = await axios.post(
-        'http://127.0.0.1:8000/api/recommend-from-location/',
-        { latitude: parseFloat(lat.toFixed(6)), longitude: parseFloat(lng.toFixed(6)) },
-        { timeout:12000 }
-      );
+      const res = await cropAPI.recommendFromLocation({
+        latitude: parseFloat(lat.toFixed(6)),
+        longitude: parseFloat(lng.toFixed(6)),
+      });
       setMapResult({ data: res.data });
     } catch (err) {
       let msg = 'Failed to get recommendation. ';
@@ -650,10 +648,8 @@ function Dashboard({ username, onLogout }) {
   const handleLeafSubmit = async () => {
     if (!leafFile) return;
     setLeafLoading(true); setLeafResult(null);
-    const fd = new FormData(); fd.append('image', leafFile);
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/predict-disease-v2/', fd,
-        { headers:{ 'Content-Type':'multipart/form-data' } });
+      const res = await diseaseAPI.predict(leafFile);
       setLeafResult({ data: res.data });
     } catch {
       setLeafResult({ error:true, data:{ error:'Diagnosis failed. Is the backend running?' } });
@@ -669,7 +665,7 @@ function Dashboard({ username, onLogout }) {
     const next = [...chat, { role:'user', text:chatInput }];
     setChat(next); setChatInput(''); setChatLoading(true);
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/assistant/', { message:chatInput });
+      const res = await assistantAPI.chat(chatInput);
       setChat([...next, { role:'bot', text:res.data.response }]);
     } catch {
       setChat([...next, { role:'bot', text:"Sorry, I'm having trouble connecting. Please try again." }]);
