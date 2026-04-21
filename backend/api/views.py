@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
     FarmSerializer, CropCycleSerializer, FarmerProfileSerializer, 
@@ -77,28 +78,34 @@ def register_user(request):
 
 # --- Farm Views ---
 class FarmListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Farm.objects.all()
     serializer_class = FarmSerializer
 
 class FarmDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Farm.objects.all()
     serializer_class = FarmSerializer
 
 # --- Crop Cycle Views ---
 class CropCycleListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = CropCycle.objects.all()
     serializer_class = CropCycleSerializer
 
 class CropCycleDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = CropCycle.objects.all()
     serializer_class = CropCycleSerializer
 
 # --- Farmer Profile Views ---
 class FarmerProfileListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = FarmerProfile.objects.all()
     serializer_class = FarmerProfileSerializer
 
 class FarmerProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = FarmerProfile.objects.all()
     serializer_class = FarmerProfileSerializer
 
